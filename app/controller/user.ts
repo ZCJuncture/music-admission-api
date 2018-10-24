@@ -3,7 +3,9 @@ import * as jwt from 'jsonwebtoken';
 
 export default class UserController extends Controller {
   public async checkStatus() {
-    this.ctx.body = 'token passed';
+    const { ctx } = this;
+    const { phoneNumber } = ctx;
+    ctx.body = await ctx.model.User.findOne({ phoneNumber }).select({ password: 0 });
   }
 
   public async register() {
@@ -20,7 +22,7 @@ export default class UserController extends Controller {
     user.password = password;
     await user.save();
 
-    ctx.body = '注册成功';
+    ctx.status = 200;
   }
 
   public async login() {
@@ -32,15 +34,15 @@ export default class UserController extends Controller {
       password: 'password',
     });
 
-    const user = await ctx.model.User.findOne({ phoneNumber, password });
+    const user = await ctx.model.User.findOne({ phoneNumber, password }).select({ password: 0 });
 
     if (user) {
-      const token: string = jwt.sign({
+      const token = jwt.sign({
         phoneNumber,
         time: Math.floor(Date.now() / 1000),
       }, 'music-admission');
 
-      ctx.app.redis.set(phoneNumber, token);
+      ctx.app.redis.hset('token', phoneNumber, token);
       ctx.body = { user, token };
 
     } else {
@@ -53,7 +55,7 @@ export default class UserController extends Controller {
     const { ctx } = this;
     const { phoneNumber } = ctx;
 
-    ctx.app.redis.del(phoneNumber);
-    ctx.body = '注销成功';
+    ctx.app.redis.hdel('token', phoneNumber);
+    ctx.status = 200;
   }
 }

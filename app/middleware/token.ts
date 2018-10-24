@@ -3,7 +3,7 @@ import * as jwt from 'jsonwebtoken';
 
 export default function (): any {
   return async (ctx: Context, next: () => Promise<any>) => {
-    const tokenFromClient: string = ctx.header.token;
+    const tokenFromClient = ctx.header.token;
 
     if (tokenFromClient === '') {
       ctx.status = 403;
@@ -12,9 +12,10 @@ export default function (): any {
     }
 
     const { phoneNumber } = jwt.decode(tokenFromClient);
-    const tokenFromRedis: string = await ctx.app.redis.get(phoneNumber);
+    const tokenFromRedis = await ctx.app.redis.hget('token', phoneNumber);
 
     if (tokenFromClient !== tokenFromRedis) {
+      ctx.app.redis.hdel('token', phoneNumber);
       ctx.status = 403;
       ctx.body = 'token expired';
       return;

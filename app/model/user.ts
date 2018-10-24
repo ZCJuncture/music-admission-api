@@ -5,8 +5,8 @@ export default (app: Application) => {
   const { Schema } = mongoose;
 
   const user = new Schema({
-    phoneNumber: { type: String },
-    password: { type: String },
+    phoneNumber: String,
+    password: String,
   });
 
   user.index({ phoneNumber: 1 }, { unique: true });

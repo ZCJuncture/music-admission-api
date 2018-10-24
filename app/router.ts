@@ -1,10 +1,14 @@
 import { Application } from 'egg';
 
 export default (app: Application) => {
-  const { controller, router, middleware } = app;
+  const { router, controller, middleware } = app;
+  const { user, news } = controller;
+  const { token, pagination } = middleware;
 
-  router.get('/user/checkStatus', middleware.token(), controller.user.checkStatus);
-  router.post('/user/register', controller.user.register);
-  router.post('/user/login', controller.user.login);
-  router.get('/user/logout', middleware.token(), controller.user.logout);
+  router.get('/user/checkStatus', token(), user.checkStatus);
+  router.post('/user/register', user.register);
+  router.post('/user/login', user.login);
+  router.get('/user/logout', token(), user.logout);
+
+  router.get('/news/getList', pagination(), news.getList);
 };
