@@ -3,9 +3,9 @@ import * as jwt from 'jsonwebtoken';
 
 export default function (): any {
   return async (ctx: Context, next: () => Promise<any>) => {
-    const tokenFromClient = ctx.header.token;
+    const tokenFromClient = ctx.header.token || ctx.query.token;
 
-    if (tokenFromClient === '') {
+    if (!tokenFromClient || tokenFromClient === '') {
       ctx.status = 403;
       ctx.body = 'token needed';
       return;
