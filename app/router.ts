@@ -13,7 +13,8 @@ export default (app: Application) => {
   router.get('/news/getList', pagination(), news.getList);
 
   router.post('/enroll/updateInfo', token(), enroll.updateInfo);
-  router.post('/enroll/uploadFile', token(), enroll.uploadFile);
-  router.get('/enroll/downloadFile', token(), enroll.downloadFile);
-  router.get('/enroll/deleteFile', token(), enroll.deleteFile);
+  router.post('/enroll/uploadImage', token(), enroll.uploadImage);
+  router.get('/enroll/downloadImage', token(), enroll.downloadImage);
+  router.get('/enroll/deleteImage', token(), enroll.deleteImage);
+  router.get('/enroll/getAlipayUrl', token(), enroll.getAlipayUrl);
 };

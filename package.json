@@ -21,6 +21,7 @@
     "clean": "ets clean"
   },
   "dependencies": {
+    "alipay-sdk": "^3.0.4",
     "egg": "^2.6.1",
     "egg-cors": "^2.1.1",
     "egg-mongoose": "^3.1.0",

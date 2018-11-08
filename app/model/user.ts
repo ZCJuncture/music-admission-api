@@ -33,6 +33,9 @@ export default (app: Application) => {
     credentialNumber: String,
     credentialFile: String,
     photoFile: String,
+
+    major: Array,
+    examInfo: { type: Map, of: Array },
   });
 
   user.index({ phoneNumber: 1 }, { unique: true });

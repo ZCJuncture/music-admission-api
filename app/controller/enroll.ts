@@ -1,8 +1,4 @@
 import { Controller } from 'egg';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as sendToWormhole from 'stream-wormhole';
-import * as uuid from 'uuid';
 
 export default class EnrollController extends Controller {
   public async updateInfo() {
@@ -13,36 +9,44 @@ export default class EnrollController extends Controller {
     ctx.status = 200;
   }
 
-  public async uploadFile() {
+  public async uploadImage() {
     const { ctx } = this;
-    const readStream = await ctx.getFileStream();
-    const fileName = uuid() + path.extname(readStream.filename);
-    const target = path.join(this.config.baseDir, 'files/' + fileName);
+    const { phoneNumber } = ctx;
+    const { type } = ctx.query;
 
-    try {
-      const writeStream = await fs.createWriteStream(target);
-      await readStream.pipe(writeStream);
-    } catch (e) {
-      sendToWormhole(readStream);
+    const fileName = await this.service.file.upload();
+
+    if (type === 'credential') {
+      await ctx.model.User.updateOne({ phoneNumber }, { credentialFile: fileName });
+    } else if (type === 'photo') {
+      await ctx.model.User.updateOne({ phoneNumber }, { photoFile: fileName });
     }
 
     ctx.body = fileName;
   }
 
-  public async downloadFile() {
-    const { ctx } = this;
-    const { fileName } = ctx.query;
-
-    const target = path.join(this.config.baseDir, 'files/' + fileName);
-    ctx.body = await fs.createReadStream(target);
+  public async downloadImage() {
+    await this.service.file.download();
   }
 
-  public async deleteFile() {
+  public async deleteImage() {
     const { ctx } = this;
-    const { fileName } = ctx.query;
+    const { phoneNumber } = ctx;
+    const { type } = ctx.query;
 
-    const target = path.join(this.config.baseDir, 'files/' + fileName);
-    if (fs.existsSync(target)) { fs.unlinkSync(target); }
+    await this.service.file.delete();
+
+    if (type === 'credential') {
+      await ctx.model.User.updateOne({ phoneNumber }, { credentialFile: '' });
+    } else if (type === 'photo') {
+      await ctx.model.User.updateOne({ phoneNumber }, { photoFile: '' });
+    }
+
     ctx.status = 200;
+  }
+
+  public async getAlipayUrl() {
+    const { ctx } = this;
+    ctx.body = await this.service.alipay.getPayUrl();
   }
 }
