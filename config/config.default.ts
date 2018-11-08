@@ -16,11 +16,12 @@ export default (appInfo: EggAppInfo) => {
 
   config.mongoose = {
     client: {
-      url: 'mongodb://59.110.172.165:27017',
+      url: 'mongodb://59.110.172.165:27017,123.206.27.201:27017,123.206.24.11:27017',
       options: {
         user: 'admin',
         pass: '1248@bit.com',
         dbName: 'music-admission',
+        replicaSet: 'replicaSet',
         useNewUrlParser: true,
       },
     },
