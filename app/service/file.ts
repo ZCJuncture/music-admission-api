@@ -27,6 +27,7 @@ export default class FileService extends Service {
 
     const target = path.join(this.config.baseDir, 'files/' + fileName);
     ctx.body = await fs.createReadStream(target);
+    ctx.set('Content-Type', this.getContentType(fileName));
     ctx.set('Content-Disposition', `filename="${fileName}"`);
   }
 
@@ -36,5 +37,19 @@ export default class FileService extends Service {
 
     const target = path.join(this.config.baseDir, 'files/' + fileName);
     if (fs.existsSync(target)) { await fs.unlinkSync(target); }
+  }
+
+  private getContentType(fileName: string) {
+    switch (path.extname(fileName)) {
+      case '.jpg':
+      case '.jpeg':
+        return 'image/jpeg';
+      case '.png':
+        return 'image/png';
+      case '.gif':
+        return 'image/gif';
+      default:
+        return 'application/octet-stream';
+    }
   }
 }

@@ -7,6 +7,8 @@ export default (app: Application) => {
   const user = new Schema({
     phoneNumber: String,
     password: String,
+    submitted: { type: Boolean, default: false },
+    paid: { type: Boolean, default: false },
 
     name: String,
     sex: String,
@@ -31,8 +33,8 @@ export default (app: Application) => {
 
     credentialType: String,
     credentialNumber: String,
-    credentialFile: String,
-    photoFile: String,
+    credentialFile: { type: String, default: '' },
+    photoFile: { type: String, default: '' },
 
     major: Array,
     examInfo: { type: Map, of: Array },

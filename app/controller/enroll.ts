@@ -9,6 +9,15 @@ export default class EnrollController extends Controller {
     ctx.status = 200;
   }
 
+  public async modifyInfo() {
+    const { ctx } = this;
+    const { phoneNumber } = ctx;
+    const { collegeExamNo, provinceExamNo } = ctx.request.body;
+
+    await ctx.model.User.updateOne({ phoneNumber }, { collegeExamNo, provinceExamNo });
+    ctx.status = 200;
+  }
+
   public async uploadImage() {
     const { ctx } = this;
     const { phoneNumber } = ctx;
