@@ -4,8 +4,8 @@ import * as jwt from 'jsonwebtoken';
 export default class UserController extends Controller {
   public async checkStatus() {
     const { ctx } = this;
-    const { phoneNumber } = ctx;
-    ctx.body = await ctx.model.User.findOne({ phoneNumber }).select({ password: 0 });
+    const { userId } = ctx;
+    ctx.body = await ctx.model.User.findById(userId).select({ password: 0 });
   }
 
   public async register() {
@@ -19,6 +19,7 @@ export default class UserController extends Controller {
 
     const user = new ctx.model.User();
     user.phoneNumber = phoneNumber;
+    user.phoneNumber2 = phoneNumber;
     user.password = password;
     await user.save();
 
@@ -37,12 +38,8 @@ export default class UserController extends Controller {
     const user = await ctx.model.User.findOne({ phoneNumber, password }).select({ password: 0 });
 
     if (user) {
-      const token = jwt.sign({
-        phoneNumber,
-        time: Math.floor(Date.now() / 1000),
-      }, 'music-admission');
-
-      ctx.app.redis.hset('token', phoneNumber, token);
+      const token = jwt.sign({ userId: user._id }, 'music-admission');
+      await ctx.app.redis.hset('token', user._id, token);
       ctx.body = { user, token };
 
     } else {
@@ -53,9 +50,9 @@ export default class UserController extends Controller {
 
   public async logout() {
     const { ctx } = this;
-    const { phoneNumber } = ctx;
+    const { userId } = ctx;
 
-    ctx.app.redis.hdel('token', phoneNumber);
+    await ctx.app.redis.hdel('token', userId);
     ctx.status = 200;
   }
 }

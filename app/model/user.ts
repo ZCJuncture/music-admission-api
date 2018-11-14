@@ -8,7 +8,6 @@ export default (app: Application) => {
     phoneNumber: String,
     password: String,
     submitted: { type: Boolean, default: false },
-    paid: { type: Boolean, default: false },
 
     name: String,
     sex: String,
@@ -19,6 +18,7 @@ export default (app: Application) => {
     school: String,
     provinceExamNo: String,
     collegeExamNo: String,
+    phoneNumber2: String,
     postcode: String,
     address: String,
     receiver: String,

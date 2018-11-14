@@ -2,8 +2,10 @@ import { Application } from 'egg';
 
 export default (app: Application) => {
   const { router, controller, middleware } = app;
-  const { user, news, enroll } = controller;
+  const { init, user, news, enroll, pay } = controller;
   const { token, submitted, pagination } = middleware;
+
+  router.get('/init', init.init);
 
   router.get('/user/checkStatus', token(), user.checkStatus);
   router.post('/user/register', user.register);
@@ -17,5 +19,8 @@ export default (app: Application) => {
   router.post('/enroll/uploadImage', token(), submitted(false), enroll.uploadImage);
   router.get('/enroll/downloadImage', token(), enroll.downloadImage);
   router.get('/enroll/deleteImage', token(), submitted(false), enroll.deleteImage);
-  router.get('/enroll/getAlipayUrl', token(), submitted(true), enroll.getAlipayUrl);
+
+  router.get('/pay/getList', token(), pay.getList);
+  router.get('/pay/getPayInfo', token(), submitted(true), pay.getPayInfo);
+  router.get('/pay/getPayResult', token(), submitted(true), pay.getPayResult);
 };

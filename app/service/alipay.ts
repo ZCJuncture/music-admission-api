@@ -23,18 +23,23 @@ export default class AlipayService extends Service {
     return AlipayService.instance;
   }
 
-  public async getPayUrl() {
+  public async getPayUrl(item: any) {
     const formData = new AlipayFormData();
     formData.setMethod('get');
-    formData.addField('returnUrl', 'http://www.baidu.com');
-    formData.addField('notifyUrl', 'http://www.com/notify');
+    formData.addField('returnUrl', item.origin);
     formData.addField('bizContent', {
-      outTradeNo: '20150320010101003',
       productCode: 'FAST_INSTANT_TRADE_PAY',
-      totalAmount: '0.01',
-      subject: '商品',
+      outTradeNo: item.orderId,
+      subject: item.name,
+      totalAmount: item.amount,
     });
 
     return await this.getInstance().exec('alipay.trade.page.pay', {}, { formData });
+  }
+
+  public async queryResult(orderId: string) {
+    return await this.getInstance().exec('alipay.trade.query', {
+      bizContent: { outTradeNo: orderId },
+    }, { validateSign: true });
   }
 }

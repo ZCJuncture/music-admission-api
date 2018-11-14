@@ -8,7 +8,7 @@ export default (app: Application) => {
     title: String,
     publisher: String,
     content: String,
-    attachment: [{ name: String, url: String }],
+    attachments: [{ name: String, url: String }],
     createDate: { type: Date, default: Date.now },
   });
 

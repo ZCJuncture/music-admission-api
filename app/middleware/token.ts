@@ -11,17 +11,17 @@ export default function (): any {
       return;
     }
 
-    const { phoneNumber } = jwt.decode(tokenFromClient);
-    const tokenFromRedis = await ctx.app.redis.hget('token', phoneNumber);
+    const { userId } = jwt.decode(tokenFromClient);
+    const tokenFromRedis = await ctx.app.redis.hget('token', userId);
 
     if (tokenFromClient !== tokenFromRedis) {
-      ctx.app.redis.hdel('token', phoneNumber);
+      ctx.app.redis.hdel('token', userId);
       ctx.status = 403;
       ctx.body = 'token expired';
       return;
     }
 
-    ctx.phoneNumber = phoneNumber;
+    ctx.userId = userId;
     await next();
   };
 }
