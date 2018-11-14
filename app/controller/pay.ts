@@ -16,7 +16,8 @@ export default class PayController extends Controller {
   public async getPayInfo() {
     const { ctx } = this;
     const { userId } = ctx;
-    let { payType, itemId, orderId } = ctx.query;
+    const { payType, itemId } = ctx.query;
+    let { orderId } = ctx.query;
 
     if (!orderId) {
       orderId = this.generateOrderId();
