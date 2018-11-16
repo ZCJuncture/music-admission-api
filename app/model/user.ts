@@ -16,8 +16,8 @@ export default (app: Application) => {
     politics: String,
     hometown: Array,
     school: String,
-    provinceExamNo: String,
-    collegeExamNo: String,
+    provinceExamNo: { type: String, default: '' },
+    collegeExamNo: { type: String, default: '' },
     phoneNumber2: String,
     postcode: String,
     address: String,
@@ -37,7 +37,12 @@ export default (app: Application) => {
     photoFile: { type: String, default: '' },
 
     major: Array,
-    examInfo: { type: Map, of: Array },
+    examInfo: {
+      first1: Array,
+      first2: Array,
+      second: Array,
+      third: Array,
+    },
   });
 
   user.index({ phoneNumber: 1 }, { unique: true });

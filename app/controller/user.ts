@@ -17,13 +17,23 @@ export default class UserController extends Controller {
       password: 'password',
     });
 
-    const user = new ctx.model.User();
-    user.phoneNumber = phoneNumber;
-    user.phoneNumber2 = phoneNumber;
-    user.password = password;
-    await user.save();
+    let user = await ctx.model.User.findOne({ phoneNumber }).select({ password: 0 });
 
-    ctx.status = 200;
+    if (!user) {
+      user = new ctx.model.User();
+      user.phoneNumber = phoneNumber;
+      user.phoneNumber2 = phoneNumber;
+      user.password = password;
+      const { _id } = await user.save();
+
+      ctx.userId = _id;
+      ctx.service.notice.autoSend('同学，您好！欢迎您报考我校，请认真阅读相关招生内容。');
+      ctx.status = 200;
+
+    } else {
+      ctx.status = 401;
+      ctx.body = '手机号已注册';
+    }
   }
 
   public async login() {
@@ -44,7 +54,7 @@ export default class UserController extends Controller {
 
     } else {
       ctx.status = 401;
-      ctx.body = '用户名或密码错误';
+      ctx.body = '手机号或密码错误';
     }
   }
 

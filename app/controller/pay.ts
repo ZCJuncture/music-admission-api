@@ -1,7 +1,7 @@
 import { Controller } from 'egg';
 
 export default class PayController extends Controller {
-  public async getList() {
+  public async getPayList() {
     const { ctx } = this;
     const { userId } = ctx;
 
@@ -21,23 +21,24 @@ export default class PayController extends Controller {
 
     if (!orderId) {
       orderId = this.generateOrderId();
-      const record = await ctx.model.PayRecord.findOne({ userId, itemId });
+      let record = await ctx.model.PayRecord.findOne({ userId, itemId });
 
       if (record) {
         record.orders.push({ _id: orderId, payType });
         await record.save();
 
       } else {
-        const newRecord = new ctx.model.PayRecord();
-        newRecord.userId = userId;
-        newRecord.itemId = itemId;
-        newRecord.orders.push({ _id: orderId, payType });
-        await newRecord.save();
+        record = new ctx.model.PayRecord();
+        record.userId = userId;
+        record.itemId = itemId;
+        record.orders.push({ _id: orderId, payType });
+        await record.save();
       }
     }
 
     const item = await ctx.model.PayItem.findById(itemId);
-    item.origin = ctx.header.origin + '/#/home/onlinePay';
+    item.origin = (process.env.NODE_ENV === 'development' ?
+      'http://localhost:8080' : 'http://101.200.60.188') + '/#/home/onlinePay';
     item.orderId = orderId;
 
     if (payType === 'alipay') {
