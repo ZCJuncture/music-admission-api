@@ -61,7 +61,7 @@ export default class PayController extends Controller {
       const result = await this.service.alipay.queryResult(orderId) as any;
 
       if (result.tradeStatus === 'TRADE_SUCCESS') {
-        await this.handleResult(orderId, result.buyerLogonId);
+        await this.handleResult(orderId, result.buyerUserId);
       }
 
       ctx.body = result;

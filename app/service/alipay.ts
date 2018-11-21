@@ -29,7 +29,7 @@ export default class AlipayService extends Service {
 
     formData.addField('returnUrl', (process.env.NODE_ENV === 'development' ?
       'http://localhost:8080' : this.config.alipay.domain) + '/#/home/onlinePay');
-    formData.addField('notifyUrl', this.config.alipay.domain + '/pay/notifyPayResult');
+    formData.addField('notifyUrl', this.config.alipay.domain + '/api/pay/notifyPayResult');
 
     formData.addField('bizContent', {
       productCode: 'FAST_INSTANT_TRADE_PAY',
@@ -38,7 +38,7 @@ export default class AlipayService extends Service {
       totalAmount: item.amount,
     });
 
-    return await this.getInstance().exec('alipay.trade.page.pay', {}, { formData });
+    return await this.getInstance().exec('alipay.trade.page.pay', {}, { formData, validateSign: true });
   }
 
   public async queryResult(orderId: string) {
