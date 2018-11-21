@@ -19,6 +19,7 @@ export default (app: Application) => {
   });
 
   payRecord.index({ userId: 1, itemId: 1 }, { unique: true });
+  payRecord.index({ 'orders._id': 1 }, { unique: true });
 
   return mongoose.model('PayRecord', payRecord);
 };

@@ -5,7 +5,7 @@ export default class EnrollController extends Controller {
     const { ctx } = this;
     const { userId } = ctx;
 
-    if (ctx.request.body.submitted) {
+    if (ctx.request.body.status === 10) {
       const message = '您的报名信息已提交，请尽快在线缴费。';
       ctx.service.notice.autoSend(message);
       ctx.body = message;

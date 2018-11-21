@@ -8,7 +8,7 @@ export default class NoticeService extends Service {
     const notice = new ctx.model.Notice();
     notice.userId = userId;
     notice.content = content;
-    notice.publisher = 'admin';
+    notice.publisher = 'system';
     await notice.save();
   }
 }

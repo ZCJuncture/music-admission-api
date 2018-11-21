@@ -37,8 +37,6 @@ export default class PayController extends Controller {
     }
 
     const item = await ctx.model.PayItem.findById(itemId);
-    item.origin = (process.env.NODE_ENV === 'development' ?
-      'http://localhost:8080' : 'http://101.200.60.188') + '/#/home/onlinePay';
     item.orderId = orderId;
 
     if (payType === 'alipay') {
@@ -57,30 +55,66 @@ export default class PayController extends Controller {
 
   public async getPayResult() {
     const { ctx } = this;
-    const { userId } = ctx;
-    const { payType, itemId, orderId } = ctx.query;
+    const { payType, orderId } = ctx.query;
 
     if (payType === 'alipay') {
       const result = await this.service.alipay.queryResult(orderId) as any;
 
       if (result.tradeStatus === 'TRADE_SUCCESS') {
-        const record = await ctx.model.PayRecord.findOne({ userId, itemId });
-
-        for (const order of record.orders) {
-          if (order._id === orderId) {
-            order.payAccount = result.buyerLogonId;
-            order.payDate = Date.now();
-            record.paid = true;
-            await record.save();
-            break;
-          }
-        }
+        await this.handleResult(orderId, result.buyerLogonId);
       }
 
       ctx.body = result;
 
     } else if (payType === 'wxpay') {
       ctx.status = 200;
+    }
+  }
+
+  public async notifyPayResult() {
+    const { ctx } = this;
+    const { out_trade_no, buyer_id } = ctx.request.body;
+
+    const verified = this.service.alipay.checkNotifySign(ctx.request.body);
+
+    if (verified) {
+      await this.handleResult(out_trade_no, buyer_id);
+      ctx.body = 'success';
+
+    } else {
+      ctx.status = 403;
+    }
+  }
+
+  private async handleResult(orderId: string, payAccount: string) {
+    const { ctx } = this;
+
+    const session = await this.app.mongoose.startSession();
+    session.startTransaction();
+
+    const record = await ctx.model.PayRecord.findOne({ 'orders._id': orderId }).session(session);
+    if (record.paid) {
+      await session.abortTransaction();
+      return;
+    }
+
+    for (const order of record.orders) {
+      if (order._id === orderId) {
+        order.payAccount = payAccount;
+        order.payDate = Date.now();
+        record.paid = true;
+        await record.save();
+        break;
+      }
+    }
+
+    const { stage } = await ctx.model.PayItem.findById(record.itemId).session(session);
+    await ctx.model.User.findByIdAndUpdate(record.userId, { status: stage === '初试' ? 20 : 50 }).session(session);
+
+    await session.commitTransaction();
+
+    if (stage === '初试') {
+      ctx.service.notice.autoSend('您已缴费成功，请在规定的时间段打印准考证。');
     }
   }
 

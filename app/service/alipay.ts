@@ -26,7 +26,11 @@ export default class AlipayService extends Service {
   public async getPayUrl(item: any) {
     const formData = new AlipayFormData();
     formData.setMethod('get');
-    formData.addField('returnUrl', item.origin);
+
+    formData.addField('returnUrl', (process.env.NODE_ENV === 'development' ?
+      'http://localhost:8080' : this.config.alipay.domain) + '/#/home/onlinePay');
+    formData.addField('notifyUrl', this.config.alipay.domain + '/pay/notifyPayResult');
+
     formData.addField('bizContent', {
       productCode: 'FAST_INSTANT_TRADE_PAY',
       outTradeNo: item.orderId,
@@ -41,5 +45,9 @@ export default class AlipayService extends Service {
     return await this.getInstance().exec('alipay.trade.query', {
       bizContent: { outTradeNo: orderId },
     }, { validateSign: true });
+  }
+
+  public checkNotifySign(data: any) {
+    return this.getInstance().checkNotifySign(data);
   }
 }

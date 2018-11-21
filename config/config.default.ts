@@ -39,6 +39,7 @@ export default (appInfo: EggAppInfo) => {
   config.alipay = {
     appId: '2016092000553404',
     gateway: 'https://openapi.alipaydev.com/gateway.do',
+    domain: 'http://101.200.60.188',
   };
 
   return {
