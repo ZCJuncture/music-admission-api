@@ -2,10 +2,8 @@ import { Application } from 'egg';
 
 export default (app: Application) => {
   const { router, controller, middleware } = app;
-  const { init, user, news, notice, enroll, pay } = controller;
+  const { user, news, notice, enroll, pay } = controller;
   const { token, status, pagination } = middleware;
-
-  router.get('/init', init.init);
 
   router.get('/user/checkStatus', token(), user.checkStatus);
   router.post('/user/register', user.register);
@@ -22,6 +20,7 @@ export default (app: Application) => {
   router.get('/enroll/deleteImage', token(), status(0, 0), enroll.deleteImage);
   router.get('/enroll/getMajorList', enroll.getMajorList);
   router.get('/enroll/getExamInfo', enroll.getExamInfo);
+  router.get('/enroll/printTicket', token(), status(20, 20), enroll.printTicket);
 
   router.get('/pay/getPayList', token(), pay.getPayList);
   router.get('/pay/getPayInfo', token(), status(10, Number.MAX_VALUE), pay.getPayInfo);

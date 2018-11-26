@@ -20,10 +20,13 @@ export default class UserController extends Controller {
     let user = await ctx.model.User.findOne({ phoneNumber }).select({ password: 0 });
 
     if (!user) {
+      const { counter } = await ctx.model.Sequence.findByIdAndUpdate('user', { $inc: { counter: 1 } });
+
       user = new ctx.model.User();
       user.phoneNumber = phoneNumber;
       user.phoneNumber2 = phoneNumber;
       user.password = password;
+      user.examNo = '2020B' + (Array(5).join('0') + counter).slice(-5);
       const { _id } = await user.save();
 
       ctx.userId = _id;

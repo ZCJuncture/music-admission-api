@@ -8,6 +8,7 @@ import News from '../../../app/model/news';
 import Notice from '../../../app/model/notice';
 import PayItem from '../../../app/model/payItem';
 import PayRecord from '../../../app/model/payRecord';
+import Sequence from '../../../app/model/sequence';
 import User from '../../../app/model/user';
 
 declare module 'egg' {
@@ -18,6 +19,7 @@ declare module 'egg' {
     Notice: ReturnType<typeof Notice>;
     PayItem: ReturnType<typeof PayItem>;
     PayRecord: ReturnType<typeof PayRecord>;
+    Sequence: ReturnType<typeof Sequence>;
     User: ReturnType<typeof User>;
   }
 }

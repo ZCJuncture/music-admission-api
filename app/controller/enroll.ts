@@ -90,4 +90,12 @@ export default class EnrollController extends Controller {
       ctx.body = examInfo;
     }
   }
+
+  public async printTicket() {
+    const { ctx } = this;
+    const { userId } = ctx;
+
+    await ctx.model.User.findByIdAndUpdate(userId, { status: 30 });
+    ctx.status = 200;
+  }
 }

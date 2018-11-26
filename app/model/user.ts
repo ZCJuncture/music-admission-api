@@ -7,6 +7,7 @@ export default (app: Application) => {
   const user = new Schema({
     phoneNumber: String,
     password: String,
+    examNo: String,
 
     // 0：已注册；10：已填报；20：已初试缴费；30：已打印准考证；40：已初试通过
     // 50：已复试缴费；60：已复试通过；70：已三试通过；80：已录取
