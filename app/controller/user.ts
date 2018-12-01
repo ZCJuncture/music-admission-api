@@ -10,7 +10,13 @@ export default class UserController extends Controller {
 
   public async register() {
     const { ctx } = this;
-    const { phoneNumber, password } = ctx.request.body;
+    const { phoneNumber, smsCode, password } = ctx.request.body;
+
+    if (smsCode !== '666666') {
+      ctx.status = 401;
+      ctx.body = '验证码错误';
+      return;
+    }
 
     ctx.validate({
       phoneNumber: /^1[345789]\d{9}$/,
@@ -67,5 +73,43 @@ export default class UserController extends Controller {
 
     await ctx.app.redis.hdel('token', userId);
     ctx.status = 200;
+  }
+
+  public async resetPassword() {
+    const { ctx } = this;
+    const { phoneNumber, smsCode } = ctx.request.body;
+
+    if (smsCode !== '666666') {
+      ctx.status = 401;
+      ctx.body = '验证码错误';
+      return;
+    }
+
+    const user = await ctx.model.User.findOne({ phoneNumber }).select({ password: 0 });
+    await this.updatePassword(user);
+  }
+
+  public async changePassword() {
+    const { ctx } = this;
+    const { userId } = ctx;
+    const { oldPass } = ctx.request.body;
+
+    const user = await ctx.model.User.findOne({ _id: userId, password: oldPass }).select({ password: 0 });
+    await this.updatePassword(user);
+  }
+
+  private async updatePassword(user: any) {
+    const { ctx } = this;
+    const { newPass } = ctx.request.body;
+
+    if (user) {
+      user.password = newPass;
+      await user.save();
+      ctx.status = 200;
+
+    } else {
+      ctx.status = 401;
+      ctx.body = '原始密码错误';
+    }
   }
 }

@@ -9,6 +9,8 @@ export default (app: Application) => {
   router.post('/user/register', user.register);
   router.post('/user/login', user.login);
   router.get('/user/logout', token(), user.logout);
+  router.post('/user/resetPassword', user.resetPassword);
+  router.post('/user/changePassword', token(), user.changePassword);
 
   router.get('/news/getNewsList', pagination(), news.getNewsList);
   router.get('/notice/getNoticeList', token(), pagination(), notice.getNoticeList);
