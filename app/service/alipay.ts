@@ -28,7 +28,7 @@ export default class AlipayService extends Service {
     formData.setMethod('get');
 
     formData.addField('returnUrl', (process.env.NODE_ENV === 'development' ?
-      'http://localhost:8080' : this.config.alipay.domain) + '/#/home/onlinePay');
+      'http://localhost:8080' : this.config.alipay.domain) + '/home/onlinePay');
     formData.addField('notifyUrl', this.config.alipay.domain + '/api/pay/notifyPayResult');
 
     formData.addField('bizContent', {
