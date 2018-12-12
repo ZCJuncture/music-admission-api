@@ -57,8 +57,9 @@ export default class UserController extends Controller {
     const user = await ctx.model.User.findOne({ phoneNumber, password }).select({ password: 0 });
 
     if (user) {
-      const token = jwt.sign({ userId: user._id }, 'music-admission');
-      await ctx.app.redis.hset('token', user._id, token);
+      const userId = user._id;
+      const token = jwt.sign({ userId }, 'music-admission');
+      await ctx.app.redis.set('token_' + userId, token, 'EX', 60 * 60);
       ctx.body = { user, token };
 
     } else {
@@ -71,7 +72,7 @@ export default class UserController extends Controller {
     const { ctx } = this;
     const { userId } = ctx;
 
-    await ctx.app.redis.hdel('token', userId);
+    await ctx.app.redis.del('token_' + userId);
     ctx.status = 200;
   }
 

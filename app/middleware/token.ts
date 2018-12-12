@@ -11,8 +11,8 @@ export default function (): any {
       return;
     }
 
-    const { userId } = jwt.decode(tokenFromClient);
-    const tokenFromRedis = await ctx.app.redis.hget('token', userId);
+    const { userId } = jwt.verify(tokenFromClient, 'music-admission');
+    const tokenFromRedis = await ctx.app.redis.get('token_' + userId);
 
     if (tokenFromClient !== tokenFromRedis) {
       ctx.app.redis.hdel('token', userId);
