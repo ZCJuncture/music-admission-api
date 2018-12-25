@@ -58,8 +58,7 @@ export default class UserController extends Controller {
 
     if (user) {
       const userId = user._id;
-      const token = jwt.sign({ userId }, 'music-admission');
-      await ctx.app.redis.set('token_' + userId, token, 'EX', 60 * 60);
+      const token = jwt.sign({ userId }, (ctx.app as any).tokenKey, { expiresIn: '1h' });
       ctx.body = { user, token };
 
     } else {
@@ -70,9 +69,6 @@ export default class UserController extends Controller {
 
   public async logout() {
     const { ctx } = this;
-    const { userId } = ctx;
-
-    await ctx.app.redis.del('token_' + userId);
     ctx.status = 200;
   }
 
