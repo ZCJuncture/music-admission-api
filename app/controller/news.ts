@@ -17,8 +17,9 @@ export default class NewsController extends Controller {
     }
 
     const condition = keyword ? { title: new RegExp(keyword) } : {};
-    const list = await ctx.model.News.find(condition).sort({ createDate: -1 }).skip(skip).limit(limit);
-    const total = await ctx.model.News.find(condition).countDocuments();
+    const list = await ctx.model.News.find(condition)
+      .sort({ createDate: -1 }).skip(skip).limit(limit).read('secondary');
+    const total = await ctx.model.News.find(condition).countDocuments().read('secondary');
 
     if (useCache) {
       ctx.app.redis.set('topNews', JSON.stringify({ list, total }));

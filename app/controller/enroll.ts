@@ -69,7 +69,7 @@ export default class EnrollController extends Controller {
       ctx.body = JSON.parse(majorList);
 
     } else {
-      majorList = await ctx.model.Major.find();
+      majorList = await ctx.model.Major.find().read('secondary');
       ctx.app.redis.set('majorList', JSON.stringify(majorList));
       ctx.body = majorList;
     }
@@ -85,7 +85,7 @@ export default class EnrollController extends Controller {
       ctx.body = JSON.parse(examInfo);
 
     } else {
-      examInfo = await ctx.model.ExamInfo.findById(major);
+      examInfo = await ctx.model.ExamInfo.findById(major).read('secondary');
       ctx.app.redis.hset('examInfo', major, JSON.stringify(examInfo));
       ctx.body = examInfo;
     }
